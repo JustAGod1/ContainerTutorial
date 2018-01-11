@@ -5,6 +5,9 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 
 /**
@@ -103,6 +106,19 @@ public class TileGuiContainer extends TileEntity implements IInventory {
 
     public boolean hasCustomInventoryName() {
         return false;
+    }
+
+    @Override
+    public Packet getDescriptionPacket() {
+        NBTTagCompound compound = new NBTTagCompound();
+        writeToNBT(compound);
+        return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, blockMetadata, compound);
+    }
+
+    @Override
+    public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) {
+        super.onDataPacket(net, pkt);
+        readFromNBT(pkt.func_148857_g());
     }
 
     /**
